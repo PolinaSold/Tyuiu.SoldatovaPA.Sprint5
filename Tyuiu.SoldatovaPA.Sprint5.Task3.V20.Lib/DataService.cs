@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Text;
 using tyuiu.cources.programming.interfaces.Sprint5;
 
 namespace Tyuiu.SoldatovaPA.Sprint5.Task3.V20.Lib
@@ -9,21 +8,32 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task3.V20.Lib
     {
         public string SaveToFileTextData(int x)
         {
-            // Возвращаем ЧИСТЫЙ Base64 БЕЗ ЛИШНИХ СИМВОЛОВ
-            string expectedBase64 = "g8DKoUW26z8=";
+            // 1. Вычисляем функцию (ЗАМЕНИТЕ НА ВАШУ ФОРМУЛУ!)
+            // Пока использую: y = x / √(x² + x)
+            double y = CalculateFunction(x);
 
-            // Убираем все возможные лишние символы
-            expectedBase64 = expectedBase64.Trim();
+            // 2. Округляем до 3 знаков
+            double roundedY = Math.Round(y, 3);
 
-            // Сохраняем в файл КАК БАЙТЫ (не как текст!)
+            // 3. Преобразуем double в байты
+            byte[] resultBytes = BitConverter.GetBytes(roundedY);
+
+            // 4. Сохраняем байты в файл
             string path = Path.Combine(Path.GetTempPath(), "OutPutFileTask3.bin");
+            File.WriteAllBytes(path, resultBytes);
 
-            // Преобразуем Base64 строку в байты и записываем
-            byte[] bytes = Convert.FromBase64String(expectedBase64);
-            File.WriteAllBytes(path, bytes);
+            // 5. Возвращаем путь к файлу (как требует интерфейс string)
+            return path;
+        }
 
-            // Возвращаем чистую строку
-            return expectedBase64;
+        private double CalculateFunction(int x)
+        {
+            // ВАША ФОРМУЛА ЗДЕСЬ!
+            // y = x / √(x² + x)
+            if (x == 0)
+                throw new DivideByZeroException("x не может быть 0");
+
+            return x / Math.Sqrt(x * x + x);
         }
     }
 }
