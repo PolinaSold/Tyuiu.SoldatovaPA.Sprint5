@@ -3,68 +3,53 @@ using System.Globalization;
 using System.IO;
 using tyuiu.cources.programming.interfaces.Sprint5;
 
-namespace Tyulu.SoldatovaPA.Sprint5.Task5.V17.Lib
+namespace Tyutu.SoldatovaPA.Sprint5.Task5.V17.Lib
 {
     public class DataService : ISprint5Task5V17
     {
         public double LoadFromDataFile(string path)
         {
-            if (!File.Exists(path))
-                throw new FileNotFoundException($"Файл не найден: {path}");
-
-            string content = File.ReadAllText(path);
-            string[] numberStrings = content.Split(new char[] { ' ', '\n', '\r', '\t', ',' },
-                                                 StringSplitOptions.RemoveEmptyEntries);
-
             double sum = 0;
 
-            foreach (string numStr in numberStrings)
+            try
             {
-                string trimmed = numStr.Trim();
-                if (string.IsNullOrEmpty(trimmed))
-                    continue;
+                string data = File.ReadAllText(path);
+                string[] numbers = data.Split(new char[] { ',', ' ', '\n', '\r', '\t' },
+                                              StringSplitOptions.RemoveEmptyEntries);
 
-                if (double.TryParse(trimmed, NumberStyles.Any, CultureInfo.InvariantCulture, out double number) ||
-                    double.TryParse(trimmed, NumberStyles.Any, new CultureInfo("ru-RU"), out number))
+                foreach (string numberStr in numbers)
                 {
-                    // Округляем до 3 знаков
-                    double roundedNumber = Math.Round(number, 3);
-
-                    // Проверяем, целое ли после округления
-                    if (IsInteger(roundedNumber))
+                    if (double.TryParse(numberStr, NumberStyles.Any, CultureInfo.InvariantCulture, out double number))
                     {
-                        int intValue = (int)Math.Round(roundedNumber);
+                        int intNumber = (int)Math.Round(number, MidpointRounding.AwayFromZero);
 
-                        if (IsPrime(intValue))
+                        if (IsPrime(intNumber))
                         {
-                            // Добавляем ОКРУГЛЕННОЕ значение (может быть 114.71 в итоге)
-                            sum += roundedNumber;
+                            sum += number;
                         }
                     }
                 }
+
+                return Math.Round(sum, 3);
             }
-
-            // Возвращаем сумму, округленную до 3 знаков
-            return Math.Round(sum, 3);
-        }
-
-        private bool IsInteger(double number)
-        {
-            return Math.Abs(number - Math.Round(number)) < 0.000001;
+            catch (Exception ex)
+            {
+                throw new Exception($"Ошибка при обработке файла: {ex.Message}");
+            }
         }
 
         private bool IsPrime(int n)
         {
             if (n <= 1) return false;
-            if (n == 2) return true;
-            if (n % 2 == 0) return false;
+            if (n <= 3) return true;
+            if (n % 2 == 0 || n % 3 == 0) return false;
 
-            int limit = (int)Math.Sqrt(n);
-            for (int i = 3; i <= limit; i += 2)
+            for (int i = 5; i * i <= n; i += 6)
             {
-                if (n % i == 0)
+                if (n % i == 0 || n % (i + 2) == 0)
                     return false;
             }
+
             return true;
         }
     }

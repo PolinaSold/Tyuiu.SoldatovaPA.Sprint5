@@ -2,76 +2,67 @@
 using System;
 using System.IO;
 
-namespace Tyulu.SoldatovaPA.Sprint5.Task5.V17.Test
+namespace Tyutu.SoldatovaPA.Sprint5.Task5.V17.Test
 {
     [TestClass]
     public class DataServiceTest
     {
         [TestMethod]
-        public void LoadFromDataFileValidTest()
+        public void TestValidDataFile()
         {
-            string tempFile = Path.GetTempFileName();
-            File.WriteAllLines(tempFile, new string[] { "2", "3", "4.5", "7", "11.0", "13.2", "17.9" });
+            string path = @"C:\DataSprint5\InPutDataFileTask5V17.txt";
+            string dir = Path.GetDirectoryName(path);
 
-            var service = new Tyulu.SoldatovaPA.Sprint5.Task5.V17.Lib.DataService();
-            double result = service.LoadFromDataFile(tempFile);
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
 
-            // 2 + 3 + 7 + 11 + 17 = 40
-            Assert.AreEqual(40.000, result, 0.001);
+            string testData = "24, 2, 18, 4, -9, 4, 10, 18, 19, 16, 11, -3, -3, 15, 3, 18, -5, -4, 25, 19";
+            File.WriteAllText(path, testData);
 
-            File.Delete(tempFile);
+            // Создаем объект DataService напрямую
+            var ds = new Tyutu.SoldatovaPA.Sprint5.Task5.V17.Lib.DataService();
+            double result = ds.LoadFromDataFile(path);
+
+            Assert.AreEqual(54.0, result, 0.001);
+
+            File.Delete(path);
         }
 
         [TestMethod]
-        public void LoadFromDataFileWithNonIntegerTest()
+        [ExpectedException(typeof(Exception))]
+        public void TestFileNotFound()
         {
-            string tempFile = Path.GetTempFileName();
-            File.WriteAllLines(tempFile, new string[] { "2.5", "3.7", "5.0", "7.3" });
-
-            var service = new Tyulu.SoldatovaPA.Sprint5.Task5.V17.Lib.DataService();
-            double result = service.LoadFromDataFile(tempFile);
-
-            // 5.0 -> 5 (простое)
-            Assert.AreEqual(5.000, result, 0.001);
-
-            File.Delete(tempFile);
+            string path = @"C:\NonExistent\File.txt";
+            var ds = new Tyutu.SoldatovaPA.Sprint5.Task5.V17.Lib.DataService();
+            double result = ds.LoadFromDataFile(path);
         }
 
         [TestMethod]
-        public void LoadFromDataFileEmptyTest()
+        public void TestSimpleNumbers()
         {
-            string tempFile = Path.GetTempFileName();
-            File.WriteAllText(tempFile, "");
+            string path = Path.Combine(Path.GetTempPath(), "test.txt");
+            File.WriteAllText(path, "2, 3, 5, 7, 11");
 
-            var service = new Tyulu.SoldatovaPA.Sprint5.Task5.V17.Lib.DataService();
-            double result = service.LoadFromDataFile(tempFile);
+            var ds = new Tyutu.SoldatovaPA.Sprint5.Task5.V17.Lib.DataService();
+            double result = ds.LoadFromDataFile(path);
 
-            Assert.AreEqual(0.000, result, 0.001);
+            Assert.AreEqual(28.0, result, 0.001);
 
-            File.Delete(tempFile);
+            File.Delete(path);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(FileNotFoundException))]
-        public void LoadFromDataFileNotFoundTest()
+        public void TestNoPrimeNumbers()
         {
-            var service = new Tyulu.SoldatovaPA.Sprint5.Task5.V17.Lib.DataService();
-            service.LoadFromDataFile("nonexistent.txt");
-        }
+            string path = Path.Combine(Path.GetTempPath(), "test.txt");
+            File.WriteAllText(path, "4, 6, 8, 9, 10, 12");
 
-        [TestMethod]
-        public void LoadFromDataFileWithNegativeNumbersTest()
-        {
-            string tempFile = Path.GetTempFileName();
-            File.WriteAllLines(tempFile, new string[] { "-2", "-3", "5", "7" });
+            var ds = new Tyutu.SoldatovaPA.Sprint5.Task5.V17.Lib.DataService();
+            double result = ds.LoadFromDataFile(path);
 
-            var service = new Tyulu.SoldatovaPA.Sprint5.Task5.V17.Lib.DataService();
-            double result = service.LoadFromDataFile(tempFile);
+            Assert.AreEqual(0.0, result, 0.001);
 
-            // Только положительные простые: 5 + 7 = 12
-            Assert.AreEqual(12.000, result, 0.001);
-
-            File.Delete(tempFile);
+            File.Delete(path);
         }
     }
 }
