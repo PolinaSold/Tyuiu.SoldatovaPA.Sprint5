@@ -25,27 +25,31 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task7.V20
             Console.WriteLine("* ИСХОДНЫЕ ДАННЫЕ:                                                        *");
             Console.WriteLine("***************************************************************************");
 
-            // Используем Path.Combine для пути
+            // Создаем путь к файлу
             string path = Path.Combine("C:", "DataSprint5", "InPutDataFileTask7V20.txt");
-            Console.WriteLine($"Данные находятся в файле: {path}");
+            Console.WriteLine($"Входной файл: {path}");
 
             // Проверяем существует ли файл
             if (!File.Exists(path))
             {
-                Console.WriteLine("Файл не найден! Создаю тестовый файл...");
+                Console.WriteLine("\nФайл не найден! Создаю тестовый файл...");
 
                 // Создаем папку если нет
                 string directory = Path.GetDirectoryName(path);
-                Directory.CreateDirectory(directory);
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
 
                 // Записываем тестовые данные
                 File.WriteAllText(path, "Ссловарные сслова сс удвоенной ссогласной нн");
-                Console.WriteLine("Файл создан!");
+                Console.WriteLine("Файл создан с тестовыми данными.");
             }
 
-            // Показываем содержимое файла
+            // Показываем что в файле
             string startStr = File.ReadAllText(path);
-            Console.WriteLine($"Содержимое файла:\n{startStr}");
+            Console.WriteLine($"\nСодержимое файла:");
+            Console.WriteLine(startStr);
 
             Console.WriteLine("\n***************************************************************************");
             Console.WriteLine("* РЕЗУЛЬТАТ:                                                              *");
@@ -59,17 +63,33 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task7.V20
                 Console.WriteLine("Результат замены:");
                 Console.WriteLine(res);
 
-                // Показываем путь к выходному файлу
-                string outPath = Path.Combine("C:", "DataSprint5", "OutPutDataFileTask7V20.txt");
-                Console.WriteLine($"\nРезультат сохранен в файл: {outPath}");
+                // Показываем где сохранен результат
+                string savePath = Path.Combine("C:", "DataSprint5", "OutPutDataFileTask7V20.txt");
+
+                if (File.Exists(savePath))
+                {
+                    Console.WriteLine($"\nРезультат сохранен в файл:");
+                    Console.WriteLine(savePath);
+
+                    // Показываем что в сохраненном файле
+                    string savedText = File.ReadAllText(savePath);
+                    Console.WriteLine($"\nСодержимое сохраненного файла:");
+                    Console.WriteLine(savedText);
+                }
+                else
+                {
+                    Console.WriteLine("\nВнимание: Выходной файл не был создан.");
+                    Console.WriteLine("(В тестовом окружении файл может не создаваться)");
+                }
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Ошибка: {e.Message}");
+                Console.WriteLine($"\nОшибка: {e.Message}");
             }
 
             Console.WriteLine("\n***************************************************************************");
-            Console.WriteLine("Нажмите любую клавишу для выхода...");
+            Console.WriteLine("* ЗАВЕРШЕНО                                                               *");
+            Console.WriteLine("***************************************************************************");
             Console.ReadKey();
         }
     }
