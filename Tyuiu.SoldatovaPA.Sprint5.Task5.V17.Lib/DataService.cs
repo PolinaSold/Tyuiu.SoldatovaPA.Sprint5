@@ -12,31 +12,27 @@ namespace Tyulu.SoldatovaPA.Sprint5.Task5.V17.Lib
             if (!File.Exists(path))
                 throw new FileNotFoundException($"Файл не найден: {path}");
 
-            string[] lines = File.ReadAllLines(path);
+            string allText = File.ReadAllText(path);
+            string[] lines = allText.Split(new char[] { ' ', '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+
             double sum = 0;
 
-            foreach (string line in lines)
+            foreach (string item in lines)
             {
-                string trimmedLine = line.Trim();
-                if (string.IsNullOrEmpty(trimmedLine))
+                string trimmed = item.Trim();
+                if (string.IsNullOrEmpty(trimmed))
                     continue;
 
-                // Пробуем разные форматы чисел
-                if (double.TryParse(trimmedLine, NumberStyles.Any, CultureInfo.InvariantCulture, out double number))
-                {
-                    sum += number;
-                }
-                else if (double.TryParse(trimmedLine, NumberStyles.Any, new CultureInfo("ru-RU"), out number))
-                {
-                    sum += number;
-                }
-                else if (double.TryParse(trimmedLine, NumberStyles.Any, new CultureInfo("en-US"), out number))
+                // Заменяем запятые на точки для парсинга
+                string normalized = trimmed.Replace(',', '.');
+
+                if (double.TryParse(normalized, NumberStyles.Any, CultureInfo.InvariantCulture, out double number))
                 {
                     sum += number;
                 }
             }
 
-            return Math.Round(sum, 3, MidpointRounding.AwayFromZero);
+            return Math.Round(sum, 3);
         }
     }
 }
