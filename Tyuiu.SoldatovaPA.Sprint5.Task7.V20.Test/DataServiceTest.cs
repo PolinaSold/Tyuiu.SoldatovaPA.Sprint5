@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using Tyuiu.SoldatovaPA.Sprint5.Task7.V20.Lib;
 
-namespace Tyuiu.SoldatovaPA.Sprint5.Task7.V20.Test
+namespace Tyuiu.SoldatovaPA.Sprint5.Task7V20.Test
 {
     [TestClass]
     public class DataServiceTest
@@ -11,33 +11,37 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task7.V20.Test
         [TestMethod]
         public void ValidLoadDataAndSave()
         {
-            // Используем временную папку
-            string tempDir = Path.GetTempPath();
-            string path = Path.Combine(tempDir, "InPutDataFileTask7V20.txt");
+            // Создаем тестовый входной файл
+            string inputPath = @"C:\DataSprint5\InPutDataFileTask7V20.txt";
+            Directory.CreateDirectory(@"C:\DataSprint5");
 
             // Записываем тестовые данные
-            File.WriteAllText(path, "Ссловарные сслова сс удвоенной ссогласной нн");
+            File.WriteAllText(inputPath, "Ссловарные сслова сс удвоенной ссогласной нн");
 
             DataService ds = new DataService();
-            string result = ds.LoadDataAndSave(path);
+            string result = ds.LoadDataAndSave(inputPath);
 
             // Ожидаемый результат
             string expected = "Словарные слова с удвоенной согласной нн";
 
-            // Проверяем результат
+            // 1. Проверяем возвращаемую строку
             Assert.AreEqual(expected, result);
 
-            // Проверяем что выходной файл создан
-            string outPath = Path.Combine(tempDir, "OutPutDataFileTask7V20.txt");
-            Assert.IsTrue(File.Exists(outPath));
+            // 2. Проверяем что выходной файл создан
+            string outputPath = @"C:\DataSprint5\OutPutDataFileTask7V20.txt";
+            Assert.IsTrue(File.Exists(outputPath), "Выходной файл не создан!");
 
-            // Проверяем содержимое выходного файла
-            string fileContent = File.ReadAllText(outPath);
-            Assert.AreEqual(expected, fileContent);
+            // 3. Проверяем содержимое выходного файла
+            string fileContent = File.ReadAllText(outputPath);
+            Assert.AreEqual(expected, fileContent, "Содержимое выходного файла неверное!");
 
-            // Чистим за собой
-            File.Delete(path);
-            File.Delete(outPath);
+            Console.WriteLine($"Входной файл: {inputPath}");
+            Console.WriteLine($"Выходной файл: {outputPath}");
+            Console.WriteLine($"Результат: {result}");
+
+            // Очистка
+            File.Delete(inputPath);
+            File.Delete(outputPath);
         }
     }
 }
