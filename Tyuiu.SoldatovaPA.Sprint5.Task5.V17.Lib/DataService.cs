@@ -10,20 +10,28 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task5.V17.Lib
         public double LoadFromDataFile(string path)
         {
             string data = File.ReadAllText(path);
-            string[] values = data.Split(new char[] { ' ', ',', '\n', '\r', '\t' },
+
+            // Заменяем все запятые на точки для единообразного парсинга
+            data = data.Replace(',', '.');
+
+            // Разделяем на числа
+            string[] values = data.Split(new char[] { ' ', '\n', '\r', '\t' },
                                        StringSplitOptions.RemoveEmptyEntries);
 
             double total = 0;
 
             foreach (string val in values)
             {
-                if (double.TryParse(val, NumberStyles.Any, CultureInfo.InvariantCulture, out double num))
+                if (double.TryParse(val, NumberStyles.Float, CultureInfo.InvariantCulture, out double num))
                 {
-                    // Берем целую часть
-                    int intNum = (int)num;
+                    // Округляем до ближайшего целого для проверки на простоту
+                    int rounded = (int)Math.Round(num, MidpointRounding.AwayFromZero);
 
-                    // Проверяем на простоту (только положительные > 1)
-                    if (intNum > 1 && IsPrime(intNum))
+                    // Берем абсолютное значение
+                    int absRounded = Math.Abs(rounded);
+
+                    // Проверяем на простоту (больше 1)
+                    if (absRounded > 1 && IsPrime(absRounded))
                     {
                         total += num;
                     }
@@ -35,11 +43,14 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task5.V17.Lib
 
         private bool IsPrime(int n)
         {
-            if (n < 2) return false;
+            if (n <= 1) return false;
+            if (n <= 3) return true;
+            if (n % 2 == 0 || n % 3 == 0) return false;
 
-            for (int i = 2; i * i <= n; i++)
+            for (int i = 5; i * i <= n; i += 6)
             {
-                if (n % i == 0) return false;
+                if (n % i == 0 || n % (i + 2) == 0)
+                    return false;
             }
 
             return true;
