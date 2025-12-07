@@ -9,23 +9,23 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task3.V20.Lib
     {
         public string SaveToFileTextData(int x)
         {
-            // 1. Вычисляем значение функции
-            // y(x) = x / √(x² + x) при x = 3
+            // Формула по вашему описанию: y = x / √(x² + x)
             double y = x / Math.Sqrt(x * x + x);
 
-            // 2. Округляем до 3 знаков
+            // Округлить до трёх знаков после запятой
             double roundedY = Math.Round(y, 3);
 
-            // 3. Преобразуем double в байты, затем в Base64
-            byte[] bytes = BitConverter.GetBytes(roundedY);
-            string base64Result = Convert.ToBase64String(bytes);
-
-            // 4. Записываем Base64 строку в бинарный файл
+            // Сохранить в бинарный файл
             string path = Path.Combine(Path.GetTempPath(), "OutPutFileTask3.bin");
-            File.WriteAllText(path, base64Result, Encoding.UTF8);
 
-            // 5. Возвращаем Base64 строку
-            return base64Result;
+            // Записываем double в бинарный файл
+            using (BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create)))
+            {
+                writer.Write(roundedY);
+            }
+
+            // Для интерфейса string - возвращаем текстовое представление
+            return roundedY.ToString("F3");
         }
     }
 }
