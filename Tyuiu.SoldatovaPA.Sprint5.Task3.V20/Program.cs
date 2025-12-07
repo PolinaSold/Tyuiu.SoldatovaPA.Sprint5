@@ -37,36 +37,36 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task3.V20
             {
                 DataService ds = new DataService();
 
-                // Получаем Base64 строку
-                string base64Result = ds.SaveToFileTextData(x);
+                // Получаем результат
+                string result = ds.SaveToFileTextData(x);
 
-                // Декодируем Base64 в double
-                byte[] bytes = Convert.FromBase64String(base64Result);
-                double value = BitConverter.ToDouble(bytes, 0);
+                // Проверяем точное совпадение
+                string expected = "g8DKoUW26z8=";
 
-                // Читаем файл для проверки
+                Console.WriteLine($"Результат: '{result}'");
+                Console.WriteLine($"Ожидалось: '{expected}'");
+                Console.WriteLine($"Длина результата: {result.Length}");
+                Console.WriteLine($"Длина ожидаемого: {expected.Length}");
+
+                // Побайтовое сравнение
+                byte[] resultBytes = Encoding.UTF8.GetBytes(result);
+                byte[] expectedBytes = Encoding.UTF8.GetBytes(expected);
+
+                Console.WriteLine($"\nБайты результата: {BitConverter.ToString(resultBytes)}");
+                Console.WriteLine($"Байты ожидаемого: {BitConverter.ToString(expectedBytes)}");
+
+                // Проверяем равенство
+                bool exactMatch = result == expected;
+                Console.WriteLine($"\nТочное совпадение строк: {exactMatch}");
+
                 string path = Path.Combine(Path.GetTempPath(), "OutPutFileTask3.bin");
-                string fileContent = File.ReadAllText(path, Encoding.UTF8);
+                Console.WriteLine($"\nФайл: {path}");
 
-                // Выводим результаты
-                Console.WriteLine($"Base64 результат: {base64Result}");
-                Console.WriteLine($"Декодированное значение: {value:F6}");
-                Console.WriteLine($"Округлено до 3 знаков: {value:F3}");
-
-                Console.WriteLine($"\nФайл сохранен: {path}");
-                Console.WriteLine($"Содержимое файла: {fileContent}");
-                Console.WriteLine($"Размер файла: {new FileInfo(path).Length} байт");
-
-                Console.WriteLine($"\nОжидалось тестом: g8DKoUW26z8=");
-                Console.WriteLine($"Совпадает с ожидаемым: {base64Result == "g8DKoUW26z8="}");
-
-                // Дополнительно: вычисляем по формуле для сравнения
-                Console.WriteLine("\n" + new string('-', 50));
-                Console.WriteLine("ВЫЧИСЛЕНИЕ ПО ФОРМУЛЕ y = x / √(x² + x):");
-                Console.WriteLine(new string('-', 50));
-                double calculated = x / Math.Sqrt(x * x + x);
-                Console.WriteLine($"Точное значение: {calculated:F6}");
-                Console.WriteLine($"Округлено до 3 знаков: {Math.Round(calculated, 3):F3}");
+                if (File.Exists(path))
+                {
+                    byte[] fileBytes = File.ReadAllBytes(path);
+                    Console.WriteLine($"Байты файла: {BitConverter.ToString(fileBytes)}");
+                }
             }
             catch (Exception ex)
             {
