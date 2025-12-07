@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using tyuiu.cources.programming.interfaces.Sprint5;
 
 namespace Tyuiu.SoldatovaPA.Sprint5.Task7.V20.Lib
@@ -8,15 +9,25 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task7.V20.Lib
     {
         public string LoadDataAndSave(string path)
         {
-            string str = File.ReadAllText(path);
+            if (!File.Exists(path))
+            {
+                throw new FileNotFoundException($"Файл не найден: {path}", path);
+            }
 
-            // Меняем "сс" на "с" и "Сс" на "С"
-            string result = str.Replace("сс", "с").Replace("Сс", "С");
+            // Читаем весь текст из файла
+            string content = File.ReadAllText(path);
 
-            // Сохраняем в ту же папку где входной файл
-            string outputPath = path.Replace("InPutDataFileTask7V20.txt", "OutPutDataFileTask7V20.txt");
-            File.WriteAllText(outputPath, result);
+            // Заменяем все вхождения "сс" на "с"
+            string result = content.Replace("сс", "с", StringComparison.Ordinal);
 
+            // Также заменяем "Сс" на "С" (если есть заглавные)
+            result = result.Replace("Сс", "С", StringComparison.Ordinal);
+
+            // Сохраняем результат в файл
+            string outputPath = @"C:\DataSprint5\OutPutDataFileTask7V20.txt";
+            File.WriteAllText(outputPath, result, Encoding.UTF8);
+
+            // Возвращаем результат
             return result;
         }
     }

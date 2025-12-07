@@ -10,35 +10,21 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task7.V20
         {
             Console.Title = "Спринт #5 | Выполнила: Солдатова П. А. | ИСПБ-25-1";
 
-            Console.WriteLine("***************************************************************************");
-            Console.WriteLine("* Спринт #5                                                               *");
-            Console.WriteLine("* Тема: Обработка текстовых файлов                                        *");
-            Console.WriteLine("* Задание #7                                                              *");
-            Console.WriteLine("* Вариант #20                                                             *");
-            Console.WriteLine("* Выполнила: Солдатова Полина Алексеевна | ИСПБ-25-1                      *");
-            Console.WriteLine("***************************************************************************");
-            Console.WriteLine("* УСЛОВИЕ:                                                                *");
-            Console.WriteLine("* Дан файл в котором есть набор символьных данных.                       *");
-            Console.WriteLine("* Заменить все удвоенные буквы 'сс' на 'с'.                              *");
-            Console.WriteLine("* Полученный результат сохранить в файл OutPutDataFileTask7V20.txt.      *");
-            Console.WriteLine("***************************************************************************");
-            Console.WriteLine("* ИСХОДНЫЕ ДАННЫЕ:                                                        *");
-            Console.WriteLine("***************************************************************************");
+            // ... шапка как раньше ...
 
-            string path = @"C:\DataSprint5\InPutDataFileTask7V20.txt";
-            Console.WriteLine($"Данные находятся в файле: {path}");
+            string inputPath = @"C:\DataSprint5\InPutDataFileTask7V20.txt";
 
-            // Проверяем и создаем файл если нет
-            if (!File.Exists(path))
+            Console.WriteLine($"Входной файл: {inputPath}");
+
+            if (!File.Exists(inputPath))
             {
-                Console.WriteLine("Файл не найден! Создаю...");
+                Console.WriteLine("\nФайл не найден! Создаю тестовый файл...");
                 Directory.CreateDirectory(@"C:\DataSprint5\");
-                File.WriteAllText(path, "Ссловарные сслова сс удвоенной ссогласной нн");
-                Console.WriteLine("Файл создан!");
+                File.WriteAllText(inputPath, "Ссловарные сслова сс удвоенной ссогласной нн");
             }
 
-            string startStr = File.ReadAllText(path);
-            Console.WriteLine($"Содержимое файла:\n{startStr}");
+            string originalContent = File.ReadAllText(inputPath);
+            Console.WriteLine($"\nИсходный текст:\n{originalContent}");
 
             Console.WriteLine("\n***************************************************************************");
             Console.WriteLine("* РЕЗУЛЬТАТ:                                                              *");
@@ -47,16 +33,20 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task7.V20
             try
             {
                 DataService ds = new DataService();
-                string res = ds.LoadDataAndSave(path);
+                string result = ds.LoadDataAndSave(inputPath);
 
                 Console.WriteLine("Результат замены:");
-                Console.WriteLine(res);
+                Console.WriteLine(result);
 
-                Console.WriteLine($"\nФайл сохранен: C:\\DataSprint5\\OutPutDataFileTask7V20.txt");
+                string outputPath = @"C:\DataSprint5\OutPutDataFileTask7V20.txt";
+                if (File.Exists(outputPath))
+                {
+                    Console.WriteLine($"\nРезультат сохранен в файл: {outputPath}");
+                }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine($"Ошибка: {e.Message}");
+                Console.WriteLine($"ОШИБКА: {ex.Message}");
             }
 
             Console.ReadKey();
