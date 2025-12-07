@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using tyuiu.cources.programming.interfaces.Sprint5;
 
 namespace Tyulu.SoldatovaPA.Sprint5.Task5.V17.Lib
@@ -13,35 +12,73 @@ namespace Tyulu.SoldatovaPA.Sprint5.Task5.V17.Lib
             if (!File.Exists(path))
                 throw new FileNotFoundException($"Файл не найден: {path}");
 
-            // Читаем весь текст
-            string content = File.ReadAllText(path);
-
-            // Заменяем запятые на точки для парсинга
-            content = content.Replace(',', '.');
-
-            // Разделяем на числа
-            string[] parts = content.Split(new char[] { ' ', '\n', '\r', '\t' },
-                                         StringSplitOptions.RemoveEmptyEntries);
-
+            // Читаем все строки
+            string[] lines = File.ReadAllLines(path);
             double sum = 0;
-            int count = 0;
 
-            foreach (string part in parts)
+            foreach (string line in lines)
             {
-                if (double.TryParse(part, NumberStyles.Any, CultureInfo.InvariantCulture, out double num))
+                // Разбиваем строку на части
+                string[] parts = line.Split(new char[] { ' ', '\t', ',', ';' },
+                                           StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (string part in parts)
                 {
-                    sum += num;
-                    count++;
+                    string trimmed = part.Trim();
+
+                    // Пробуем парсить как целое число
+                    if (int.TryParse(trimmed, out int intValue))
+                    {
+                        if (IsPrime(intValue))
+                        {
+                            sum += intValue;
+                        }
+                    }
+                    // Пробуем парсить как вещественное число
+                    else if (double.TryParse(trimmed, NumberStyles.Any, CultureInfo.InvariantCulture, out double doubleValue))
+                    {
+                        // Проверяем, является ли число целым (с небольшой погрешностью)
+                        if (Math.Abs(doubleValue - Math.Round(doubleValue)) < 0.000001)
+                        {
+                            int intFromDouble = (int)Math.Round(doubleValue);
+                            if (IsPrime(intFromDouble))
+                            {
+                                sum += intFromDouble;
+                            }
+                        }
+                    }
+                    // Пробуем с заменой запятой/точки
+                    else if (double.TryParse(trimmed.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out doubleValue))
+                    {
+                        if (Math.Abs(doubleValue - Math.Round(doubleValue)) < 0.000001)
+                        {
+                            int intFromDouble = (int)Math.Round(doubleValue);
+                            if (IsPrime(intFromDouble))
+                            {
+                                sum += intFromDouble;
+                            }
+                        }
+                    }
                 }
             }
 
-            double result = Math.Round(sum, 3);
+            // Округляем результат до 3 знаков
+            return Math.Round(sum, 3);
+        }
 
-            // Для отладки
-            File.WriteAllText(Path.Combine(Path.GetTempPath(), "debug.txt"),
-                $"Sum: {sum}\nResult: {result}\nCount: {count}");
+        private bool IsPrime(int n)
+        {
+            if (n < 2) return false;
+            if (n == 2) return true;
+            if (n % 2 == 0) return false;
 
-            return result;
+            int limit = (int)Math.Sqrt(n);
+            for (int i = 3; i <= limit; i += 2)
+            {
+                if (n % i == 0)
+                    return false;
+            }
+            return true;
         }
     }
 }
