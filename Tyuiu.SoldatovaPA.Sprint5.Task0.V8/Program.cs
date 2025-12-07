@@ -45,7 +45,11 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task0.V8
 
                 // Вывод результата на консоль
                 Console.WriteLine($"Значение функции = {result}");
-                Console.WriteLine($"Файл: {Path.GetFullPath(path)}");
+                Console.WriteLine($"Файл: {path}");
+
+                // Также выводим вычисленное значение для проверки
+                double y = (Math.Pow(x, 3) - 1) / (4 * Math.Pow(x, 2));
+                Console.WriteLine($"Точное значение (для проверки): {y:F6}");
             }
             catch (DivideByZeroException)
             {

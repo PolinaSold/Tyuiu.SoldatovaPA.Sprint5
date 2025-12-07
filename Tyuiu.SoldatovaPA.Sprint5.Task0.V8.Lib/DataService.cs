@@ -20,8 +20,12 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task0.V8.Lib
             // Округление до 3 знаков после запятой
             string result = y.ToString("F3");
 
-            // Путь к файлу в текущей директории
-            string path = "OutPutFileTask0.txt";
+            // Получаем путь к временной директории
+            string tempPath = Path.GetTempPath();
+
+            // Создаем полный путь к файлу
+            string fileName = "OutPutFileTask0.txt";
+            string path = Path.Combine(tempPath, fileName);
 
             // Запись результата в файл
             File.WriteAllText(path, result);
