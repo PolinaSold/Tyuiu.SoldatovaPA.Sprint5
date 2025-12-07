@@ -23,8 +23,13 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task7.V20.Lib
             // Также заменяем "Сс" на "С" (если есть заглавные)
             result = result.Replace("Сс", "С", StringComparison.Ordinal);
 
+            // Получаем директорию входного файла
+            string directory = Path.GetDirectoryName(path);
+
+            // Формируем путь для выходного файла в той же директории
+            string outputPath = Path.Combine(directory, "OutPutDataFileTask7V20.txt");
+
             // Сохраняем результат в файл
-            string outputPath = @"C:\DataSprint5\OutPutDataFileTask7V20.txt";
             File.WriteAllText(outputPath, result, Encoding.UTF8);
 
             // Возвращаем результат

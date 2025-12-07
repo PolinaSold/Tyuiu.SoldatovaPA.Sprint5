@@ -8,45 +8,42 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task7.V20
     {
         static void Main(string[] args)
         {
-            Console.Title = "Спринт #5 | Выполнила: Солдатова П. А. | ИСПБ-25-1";
-
-            // ... шапка как раньше ...
-
+            // Путь из задания
             string inputPath = @"C:\DataSprint5\InPutDataFileTask7V20.txt";
 
-            Console.WriteLine($"Входной файл: {inputPath}");
-
+            // Если файла нет в указанном месте, используем текущую директорию
             if (!File.Exists(inputPath))
             {
-                Console.WriteLine("\nФайл не найден! Создаю тестовый файл...");
-                Directory.CreateDirectory(@"C:\DataSprint5\");
-                File.WriteAllText(inputPath, "Ссловарные сслова сс удвоенной ссогласной нн");
+                inputPath = Path.Combine(Directory.GetCurrentDirectory(), "DataSprint5", "InPutDataFileTask7V20.txt");
+
+                // Создаем папку и файл если нужно
+                if (!File.Exists(inputPath))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(inputPath));
+                    File.WriteAllText(inputPath, "Ссловарные сслова сс удвоенной ссогласной нн");
+                }
             }
 
-            string originalContent = File.ReadAllText(inputPath);
-            Console.WriteLine($"\nИсходный текст:\n{originalContent}");
-
-            Console.WriteLine("\n***************************************************************************");
-            Console.WriteLine("* РЕЗУЛЬТАТ:                                                              *");
-            Console.WriteLine("***************************************************************************");
+            Console.WriteLine($"Обрабатываем файл: {inputPath}");
+            Console.WriteLine($"Содержимое: {File.ReadAllText(inputPath)}");
 
             try
             {
                 DataService ds = new DataService();
                 string result = ds.LoadDataAndSave(inputPath);
 
-                Console.WriteLine("Результат замены:");
+                Console.WriteLine("\nРезультат замены:");
                 Console.WriteLine(result);
 
-                string outputPath = @"C:\DataSprint5\OutPutDataFileTask7V20.txt";
-                if (File.Exists(outputPath))
-                {
-                    Console.WriteLine($"\nРезультат сохранен в файл: {outputPath}");
-                }
+                // Показываем где сохранен выходной файл
+                string outputDirectory = Path.GetDirectoryName(inputPath);
+                string outputPath = Path.Combine(outputDirectory, "OutPutDataFileTask7V20.txt");
+
+                Console.WriteLine($"\nРезультат сохранен в: {outputPath}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"ОШИБКА: {ex.Message}");
+                Console.WriteLine($"Ошибка: {ex.Message}");
             }
 
             Console.ReadKey();

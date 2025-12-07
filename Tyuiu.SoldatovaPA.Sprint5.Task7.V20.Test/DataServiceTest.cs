@@ -11,24 +11,35 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task7.V20.Test
         [TestMethod]
         public void ValidLoadDataAndSave()
         {
-            string path = @"C:\DataSprint5\InPutDataFileTask7V20.txt";
-
-            Directory.CreateDirectory(@"C:\DataSprint5\");
-            string testData = "Ссловарные сслова сс удвоенной ссогласной нн";
-            File.WriteAllText(path, testData);
+            // Создаем временный файл
+            string tempFile = Path.GetTempFileName();
+            File.WriteAllText(tempFile, "Ссловарные сслова сс удвоенной ссогласной нн");
 
             DataService ds = new DataService();
-            string result = ds.LoadDataAndSave(path);
+            string result = ds.LoadDataAndSave(tempFile);
             string expected = "Словарные слова с удвоенной согласной нн";
 
+            Console.WriteLine($"Результат: {result}");
             Assert.AreEqual(expected, result);
 
-            // Проверяем что файл сохранен
-            string outputPath = @"C:\DataSprint5\OutPutDataFileTask7V20.txt";
-            Assert.IsTrue(File.Exists(outputPath));
+            // Проверяем что выходной файл создан в той же директории
+            string outputFile = Path.Combine(Path.GetDirectoryName(tempFile), "OutPutDataFileTask7V20.txt");
+            Assert.IsTrue(File.Exists(outputFile));
 
-            string fileContent = File.ReadAllText(outputPath);
+            string fileContent = File.ReadAllText(outputFile);
             Assert.AreEqual(expected, fileContent);
+
+            // Удаляем временные файлы
+            File.Delete(tempFile);
+            File.Delete(outputFile);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(FileNotFoundException))]
+        public void CheckFileNotFoundException()
+        {
+            DataService ds = new DataService();
+            ds.LoadDataAndSave("non_existent_file.txt");
         }
     }
 }
