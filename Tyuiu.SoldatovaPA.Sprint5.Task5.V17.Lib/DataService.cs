@@ -10,51 +10,33 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task5.V17.Lib
         public double LoadFromDataFile(string path)
         {
             string data = File.ReadAllText(path);
-
-            // Разделяем числа
-            string[] values = data.Split(new char[] { ',', ' ', '\n', '\r', '\t' },
-                                       StringSplitOptions.RemoveEmptyEntries);
+            string[] numbers = data.Split(new char[] { ' ', '\n', '\r', '\t', ',' },
+                                        StringSplitOptions.RemoveEmptyEntries);
 
             double sum = 0;
 
-            foreach (string val in values)
+            foreach (string numStr in numbers)
             {
-                string trimmed = val.Trim();
-
-                // Пробуем разные форматы чисел
-                if (TryParseNumber(trimmed, out double number))
+                if (double.TryParse(numStr, NumberStyles.Any, CultureInfo.InvariantCulture, out double num))
                 {
-                    // Получаем целую часть (отбрасываем дробную)
-                    // Для отрицательных: Math.Truncate(-3.7) = -3
-                    int intPart = (int)Math.Truncate(number);
+                    // Берем абсолютное значение и округляем
+                    double absNum = Math.Abs(num);
+                    int rounded = (int)Math.Round(absNum, MidpointRounding.AwayFromZero);
 
-                    // Берем абсолютное значение для проверки на простоту
-                    int absIntPart = Math.Abs(intPart);
-
-                    // Проверяем, является ли целая часть простым числом (>1)
-                    if (absIntPart > 1 && IsPrime(absIntPart))
+                    if (rounded > 1 && IsPrime(rounded))
                     {
-                        sum += number;
+                        sum += num;
                     }
                 }
             }
 
-            // Округляем итоговую сумму до 3 знаков
             return Math.Round(sum, 3);
-        }
-
-        private bool TryParseNumber(string s, out double result)
-        {
-            // Пробуем разные форматы
-            return double.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result) ||
-                   double.TryParse(s.Replace('.', ','), NumberStyles.Any, CultureInfo.GetCultureInfo("ru-RU"), out result) ||
-                   double.TryParse(s.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out result);
         }
 
         private bool IsPrime(int n)
         {
             if (n <= 1) return false;
-            if (n <= 3) return true;
+            if (n == 2 || n == 3) return true;
             if (n % 2 == 0 || n % 3 == 0) return false;
 
             for (int i = 5; i * i <= n; i += 6)
