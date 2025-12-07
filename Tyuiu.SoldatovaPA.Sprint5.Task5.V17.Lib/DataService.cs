@@ -11,34 +11,44 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task5.V17.Lib
         {
             string data = File.ReadAllText(path);
 
-            // Заменяем все запятые на точки для единообразного парсинга
-            data = data.Replace(',', '.');
-
-            // Разделяем на числа
-            string[] values = data.Split(new char[] { ' ', '\n', '\r', '\t' },
+            // Разделяем числа
+            string[] values = data.Split(new char[] { ',', ' ', '\n', '\r', '\t' },
                                        StringSplitOptions.RemoveEmptyEntries);
 
-            double total = 0;
+            double sum = 0;
 
             foreach (string val in values)
             {
-                if (double.TryParse(val, NumberStyles.Float, CultureInfo.InvariantCulture, out double num))
+                string trimmed = val.Trim();
+
+                // Пробуем разные форматы чисел
+                if (TryParseNumber(trimmed, out double number))
                 {
-                    // Округляем до ближайшего целого для проверки на простоту
-                    int rounded = (int)Math.Round(num, MidpointRounding.AwayFromZero);
+                    // Получаем целую часть (отбрасываем дробную)
+                    // Для отрицательных: Math.Truncate(-3.7) = -3
+                    int intPart = (int)Math.Truncate(number);
 
-                    // Берем абсолютное значение
-                    int absRounded = Math.Abs(rounded);
+                    // Берем абсолютное значение для проверки на простоту
+                    int absIntPart = Math.Abs(intPart);
 
-                    // Проверяем на простоту (больше 1)
-                    if (absRounded > 1 && IsPrime(absRounded))
+                    // Проверяем, является ли целая часть простым числом (>1)
+                    if (absIntPart > 1 && IsPrime(absIntPart))
                     {
-                        total += num;
+                        sum += number;
                     }
                 }
             }
 
-            return Math.Round(total, 3);
+            // Округляем итоговую сумму до 3 знаков
+            return Math.Round(sum, 3);
+        }
+
+        private bool TryParseNumber(string s, out double result)
+        {
+            // Пробуем разные форматы
+            return double.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result) ||
+                   double.TryParse(s.Replace('.', ','), NumberStyles.Any, CultureInfo.GetCultureInfo("ru-RU"), out result) ||
+                   double.TryParse(s.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out result);
         }
 
         private bool IsPrime(int n)
