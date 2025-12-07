@@ -1,68 +1,59 @@
 ﻿using System;
-using System.IO;
 using System.Globalization;
+using System.IO;
 using tyuiu.cources.programming.interfaces.Sprint5;
 
-namespace Tyuiu.SoldatovaPA.Sprint5.Task5.V17.Lib
+namespace Tyuiu.SoldatovaPA.Sprint5.Task5.V19.Lib
 {
-    public class DataService : ISprint5Task5V17
+    public class DataService : ISprint5Task5V19
     {
         public double LoadFromDataFile(string path)
         {
-            string data = File.ReadAllText(path);
-
-            // Разделяем всеми возможными разделителями
-            string[] numbers = data.Split(new char[] { ' ', '\n', '\r', '\t', ',' },
-                                        StringSplitOptions.RemoveEmptyEntries);
-
-            double sum = 0;
-
-            foreach (string numStr in numbers)
+            if (!File.Exists(path))
             {
-                string trimmed = numStr.Trim();
+                throw new FileNotFoundException($"Файл не найден: {path}", path);
+            }
 
-                // Пытаемся распарсить число
-                if (double.TryParse(trimmed, NumberStyles.Any, CultureInfo.InvariantCulture, out double num))
+            string content = File.ReadAllText(path);
+            string[] tokens = content.Split(
+                new char[] { ' ', '\n', '\r', '\t' },
+                StringSplitOptions.RemoveEmptyEntries);
+
+            int? minSingleDigit = null;
+            int? maxSingleDigit = null;
+
+            foreach (string token in tokens)
+            {
+                if (double.TryParse(token, NumberStyles.Any, CultureInfo.InvariantCulture, out double value))
                 {
-                    // Проверяем, является ли число целым (без дробной части)
-                    bool isInteger = Math.Abs(num - Math.Round(num)) < 0.000001;
+                    value = Math.Round(value, 3);
 
-                    if (isInteger)
+                    if (Math.Abs(value - Math.Round(value)) < 0.000001)
                     {
-                        // Преобразуем в целое
-                        int intValue = (int)Math.Round(num);
+                        int intValue = (int)Math.Round(value);
 
-                        // Берем абсолютное значение для проверки на простоту
-                        int absValue = Math.Abs(intValue);
-
-                        // Проверяем, является ли число простым (>1)
-                        if (absValue > 1 && IsPrime(absValue))
+                        if (intValue >= -9 && intValue <= 9)
                         {
-                            sum += num;
+                            if (!minSingleDigit.HasValue || intValue < minSingleDigit.Value)
+                            {
+                                minSingleDigit = intValue;
+                            }
+
+                            if (!maxSingleDigit.HasValue || intValue > maxSingleDigit.Value)
+                            {
+                                maxSingleDigit = intValue;
+                            }
                         }
                     }
                 }
             }
 
-            // Округляем результат до 3 знаков после запятой
-            return Math.Round(sum, 3);
-        }
-
-        private bool IsPrime(int n)
-        {
-            // Простые числа начинаются с 2
-            if (n < 2) return false;
-            if (n == 2) return true;
-            if (n % 2 == 0) return false;
-
-            // Проверяем нечетные делители до корня из n
-            int limit = (int)Math.Sqrt(n);
-            for (int i = 3; i <= limit; i += 2)
+            if (!minSingleDigit.HasValue || !maxSingleDigit.HasValue)
             {
-                if (n % i == 0) return false;
+                return 0;
             }
 
-            return true;
+            return maxSingleDigit.Value - minSingleDigit.Value;
         }
     }
 }
