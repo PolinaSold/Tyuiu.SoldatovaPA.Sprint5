@@ -9,46 +9,37 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task5.V17.Lib
     {
         public double LoadFromDataFile(string path)
         {
-            string content = File.ReadAllText(path);
-            string[] numbers = content.Split(new char[] { ',', ' ', '\n', '\r', '\t' },
-                                            StringSplitOptions.RemoveEmptyEntries);
+            string data = File.ReadAllText(path);
+            string[] values = data.Split(new char[] { ' ', ',', '\n', '\r', '\t' },
+                                       StringSplitOptions.RemoveEmptyEntries);
 
-            double sum = 0;
+            double total = 0;
 
-            foreach (string numStr in numbers)
+            foreach (string val in values)
             {
-                // Заменяем запятую на точку для корректного парсинга
-                string normalized = numStr.Replace(',', '.');
-
-                if (double.TryParse(normalized, NumberStyles.Float, CultureInfo.InvariantCulture, out double number))
+                if (double.TryParse(val, NumberStyles.Any, CultureInfo.InvariantCulture, out double num))
                 {
-                    // Получаем целую часть числа
-                    int intPart = (int)number;
+                    // Берем целую часть
+                    int intNum = (int)num;
 
-                    // Если число отрицательное, берем абсолютное значение
-                    int absIntPart = Math.Abs(intPart);
-
-                    // Проверяем, является ли целая часть простым числом (больше 1)
-                    if (absIntPart > 1 && IsPrime(absIntPart))
+                    // Проверяем на простоту (только положительные > 1)
+                    if (intNum > 1 && IsPrime(intNum))
                     {
-                        sum += number;
+                        total += num;
                     }
                 }
             }
 
-            return Math.Round(sum, 3);
+            return Math.Round(total, 3);
         }
 
         private bool IsPrime(int n)
         {
-            if (n <= 1) return false;
-            if (n <= 3) return true;
-            if (n % 2 == 0 || n % 3 == 0) return false;
+            if (n < 2) return false;
 
-            for (int i = 5; i * i <= n; i += 6)
+            for (int i = 2; i * i <= n; i++)
             {
-                if (n % i == 0 || n % (i + 2) == 0)
-                    return false;
+                if (n % i == 0) return false;
             }
 
             return true;
