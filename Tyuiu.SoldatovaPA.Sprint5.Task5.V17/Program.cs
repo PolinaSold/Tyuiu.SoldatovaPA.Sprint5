@@ -27,8 +27,8 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task5.V17
 
             DataService ds = new DataService();
 
-            // Путь к файлу
-            string path = $@"{Directory.GetCurrentDirectory()}\InPutDataFileTask5V17.txt";
+            // Путь к файлу из задания
+            string path = @"C:\DataSprint5\InPutDataFileTask5V17.txt";
 
             Console.WriteLine("Данные находятся в файле: " + path);
             Console.WriteLine("***************************************************************************");
@@ -39,6 +39,11 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task5.V17
             {
                 double res = ds.LoadFromDataFile(path);
                 Console.WriteLine("Сумма всех простых целых чисел в файле = " + res.ToString("F3"));
+            }
+            catch (FileNotFoundException ex)
+            {
+                Console.WriteLine("Ошибка! " + ex.Message);
+                Console.WriteLine("Убедитесь, что файл существует по указанному пути.");
             }
             catch (Exception ex)
             {

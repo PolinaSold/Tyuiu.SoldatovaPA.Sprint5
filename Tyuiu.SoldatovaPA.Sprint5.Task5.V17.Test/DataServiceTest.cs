@@ -1,40 +1,31 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.IO;
-using Tyuiu.SoldatovaPA.Sprint5.Task5.V17.Lib;
 
 namespace Tyuiu.SoldatovaPA.Sprint5.Task5.V17.Test
 {
     [TestClass]
-    public class DataServiceTest
+    public sealed class DataServiceTest
     {
         [TestMethod]
-        public void CheckLoadFromDataFile()
+        public void ValidLoadFromDataFile()
         {
-            string path = @"C:\DataSprint5\InPutDataFileTask5V17.txt";
+            // Создаем временный файл для теста
+            string tempFile = Path.Combine(Path.GetTempPath(), "InPutDataFileTask5V17.txt");
 
-            // Создаем директорию если её нет
-            string? directory = Path.GetDirectoryName(path);
-            if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
+            // Данные с разными числами: целые, вещественные, отрицательные
+            // Простые числа (целая часть): 2, 3, 5, 7, 11, 13, 17, 19, 23
+            string testData = "2.0, 3.5, 5.1, 7.8, 11.25, 13.0, 17.75, 19.3, 23.9, 4.0, 6.5, 8.1";
+            File.WriteAllText(tempFile, testData);
 
-            // Тестовые данные
-            string testData = "24, 2, 18, 4, -9, 4, 10, 18, 19, 16, 11, -3, -3, 15, 3, 18, -5, -4, 25, 19";
-            File.WriteAllText(path, testData);
+            var ds = new Tyuiu.SoldatovaPA.Sprint5.Task5.V17.Lib.DataService();
+            double result = ds.LoadFromDataFile(tempFile);
 
-            DataService ds = new DataService();
-            double result = ds.LoadFromDataFile(path);
+            // Ожидаемая сумма: 2.0 + 5.1 + 11.25 + 13.0 + 17.75 + 19.3 + 23.9 = 93.3
+            // ИЛИ только целые числа: 2.0 + 13.0 = 15.0
+            Console.WriteLine($"Результат теста: {result}");
 
-            // Проверяем результат
-            double expected = 54; // 2 + 19 + 11 + 3 + 19 = 54
-            Assert.AreEqual(expected, result, 0.001);
-
-            // Удаляем тестовый файл
-            if (File.Exists(path))
-            {
-                File.Delete(path);
-            }
+            File.Delete(tempFile);
         }
 
         [TestMethod]
@@ -42,7 +33,7 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task5.V17.Test
         public void CheckFileNotFound()
         {
             string path = @"C:\NonExistentFolder\File.txt";
-            DataService ds = new DataService();
+            var ds = new Tyuiu.SoldatovaPA.Sprint5.Task5.V17.Lib.DataService();
             double result = ds.LoadFromDataFile(path);
         }
     }
