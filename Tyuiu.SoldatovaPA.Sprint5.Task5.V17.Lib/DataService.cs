@@ -10,6 +10,8 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task5.V17.Lib
         public double LoadFromDataFile(string path)
         {
             string data = File.ReadAllText(path);
+
+            // Разделяем всеми возможными разделителями
             string[] numbers = data.Split(new char[] { ' ', '\n', '\r', '\t', ',' },
                                         StringSplitOptions.RemoveEmptyEntries);
 
@@ -17,32 +19,47 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task5.V17.Lib
 
             foreach (string numStr in numbers)
             {
-                if (double.TryParse(numStr, NumberStyles.Any, CultureInfo.InvariantCulture, out double num))
-                {
-                    // Берем абсолютное значение и округляем
-                    double absNum = Math.Abs(num);
-                    int rounded = (int)Math.Round(absNum, MidpointRounding.AwayFromZero);
+                string trimmed = numStr.Trim();
 
-                    if (rounded > 1 && IsPrime(rounded))
+                // Пытаемся распарсить число
+                if (double.TryParse(trimmed, NumberStyles.Any, CultureInfo.InvariantCulture, out double num))
+                {
+                    // Проверяем, является ли число целым (без дробной части)
+                    bool isInteger = Math.Abs(num - Math.Round(num)) < 0.000001;
+
+                    if (isInteger)
                     {
-                        sum += num;
+                        // Преобразуем в целое
+                        int intValue = (int)Math.Round(num);
+
+                        // Берем абсолютное значение для проверки на простоту
+                        int absValue = Math.Abs(intValue);
+
+                        // Проверяем, является ли число простым (>1)
+                        if (absValue > 1 && IsPrime(absValue))
+                        {
+                            sum += num;
+                        }
                     }
                 }
             }
 
+            // Округляем результат до 3 знаков после запятой
             return Math.Round(sum, 3);
         }
 
         private bool IsPrime(int n)
         {
-            if (n <= 1) return false;
-            if (n == 2 || n == 3) return true;
-            if (n % 2 == 0 || n % 3 == 0) return false;
+            // Простые числа начинаются с 2
+            if (n < 2) return false;
+            if (n == 2) return true;
+            if (n % 2 == 0) return false;
 
-            for (int i = 5; i * i <= n; i += 6)
+            // Проверяем нечетные делители до корня из n
+            int limit = (int)Math.Sqrt(n);
+            for (int i = 3; i <= limit; i += 2)
             {
-                if (n % i == 0 || n % (i + 2) == 0)
-                    return false;
+                if (n % i == 0) return false;
             }
 
             return true;
