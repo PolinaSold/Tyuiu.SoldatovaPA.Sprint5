@@ -10,20 +10,28 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task3.V20.Test
         [TestMethod]
         public void ValidSaveToFileTextData()
         {
+            // y(x) = x / √(x² + x)
+            // При x = 3: 3 / √(9 + 3) = 3 / √12 = 3 / 3.4641 = 0.866025
+
             DataService ds = new DataService();
             string path = ds.SaveToFileTextData(3);
 
             // Проверяем, что файл создан
             Assert.IsTrue(File.Exists(path));
 
-            // Проверяем содержимое файла
-            string fileContent = File.ReadAllText(path);
+            // Читаем результат из файла
+            string result;
+            using (BinaryReader reader = new BinaryReader(File.Open(path, FileMode.Open)))
+            {
+                result = reader.ReadString();
+            }
 
-            // Проверяем округление до 3 знаков
-            Assert.AreEqual("-1,000", fileContent);
+            // Проверяем результат
+            // 0.866025 округляем до 3 знаков: 0.866
+            Assert.AreEqual("0,866", result);
 
             // Проверяем путь
-            StringAssert.Contains(path, "OutPutFileTask3.txt");
+            StringAssert.Contains(path, "OutPutFileTask3.bin");
             Assert.IsTrue(path.StartsWith(Path.GetTempPath()));
         }
 
@@ -32,38 +40,33 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task3.V20.Test
         {
             DataService ds = new DataService();
 
-            // Проверяем для x = 0
-            string path1 = ds.SaveToFileTextData(0);
-            string content1 = File.ReadAllText(path1);
-            Assert.AreEqual("-1,000", content1);
+            // x = 1: 1 / √(1 + 1) = 1 / √2 = 1 / 1.4142 = 0.7071
+            string path1 = ds.SaveToFileTextData(1);
+            using (BinaryReader reader = new BinaryReader(File.Open(path1, FileMode.Open)))
+            {
+                string result1 = reader.ReadString();
+                Assert.AreEqual("0,707", result1);
+            }
 
-            // Проверяем для x = 1
-            string path2 = ds.SaveToFileTextData(1);
-            string content2 = File.ReadAllText(path2);
-            Assert.AreEqual("-1,000", content2);
-
-            // Проверяем для x = 5
-            string path3 = ds.SaveToFileTextData(5);
-            string content3 = File.ReadAllText(path3);
-            Assert.AreEqual("19,000", content3);
+            // x = 4: 4 / √(16 + 4) = 4 / √20 = 4 / 4.4721 = 0.8944
+            string path2 = ds.SaveToFileTextData(4);
+            using (BinaryReader reader = new BinaryReader(File.Open(path2, FileMode.Open)))
+            {
+                string result2 = reader.ReadString();
+                Assert.AreEqual("0,894", result2);
+            }
         }
 
         [TestMethod]
-        public void CheckFileFormat()
+        [ExpectedException(typeof(System.ArgumentException))]
+        public void CheckNegativeUnderRoot()
         {
+            // Для x = -2: (-2)² + (-2) = 4 - 2 = 2 > 0, должно работать
+            // Для x = -1: 1 - 1 = 0, должно работать
+
+            // Для очень отрицательных x может быть проблема
             DataService ds = new DataService();
-            string path = ds.SaveToFileTextData(3);
-
-            // Проверяем, что файл текстовый
-            string content = File.ReadAllText(path);
-
-            // Проверяем формат числа с 3 знаками после запятой
-            Assert.IsTrue(content.Contains(","));
-
-            // Проверяем, что после запятой 3 цифры
-            string[] parts = content.Split(',');
-            Assert.AreEqual(2, parts.Length);
-            Assert.AreEqual(3, parts[1].Length);
+            ds.SaveToFileTextData(-10);
         }
     }
 }

@@ -8,29 +8,40 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task3.V20.Lib
     {
         public string SaveToFileTextData(int x)
         {
-            // Вычисляем значение функции
-            // ЗАМЕНИТЕ НА ВАШУ ФУНКЦИЮ!
-            double y = CalculateFunction(x);
+            // Вычисляем y(x) = x / √(x² + x)
+            double result = CalculateFunction(x);
 
             // Округляем до 3 знаков после запятой
-            string result = y.ToString("F3");
+            string roundedResult = result.ToString("F3");
 
-            // Создаем путь к файлу в temp директории
-            string path = Path.Combine(Path.GetTempPath(), "OutPutFileTask3.txt");
+            // Создаем путь к бинарному файлу
+            string path = Path.Combine(Path.GetTempPath(), "OutPutFileTask3.bin");
 
-            // Записываем результат в текстовый файл
-            File.WriteAllText(path, result);
+            // Записываем в бинарный файл
+            using (BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create)))
+            {
+                // Записываем как строку в бинарный формат
+                writer.Write(roundedResult);
+            }
 
             return path;
         }
 
-        // ВАЖНО: ЗАМЕНИТЕ НА ВАШУ ФУНКЦИЮ!
         private double CalculateFunction(int x)
         {
-            // ПРИМЕР: g(x) = x^3 - 4x^2 + 3x - 1
-            // При x = 3: 27 - 36 + 9 - 1 = -1
+            // y(x) = x / √(x² + x)
+            // Проверка: чтобы под корнем не было отрицательного числа
+            double underRoot = x * x + x;
 
-            return Math.Pow(x, 3) - 4 * Math.Pow(x, 2) + 3 * x - 1;
+            if (underRoot < 0)
+                throw new ArgumentException("Под корнем отрицательное число!");
+
+            double denominator = Math.Sqrt(underRoot);
+
+            if (Math.Abs(denominator) < 0.0000001)
+                throw new DivideByZeroException("Деление на ноль!");
+
+            return x / denominator;
         }
     }
 }
