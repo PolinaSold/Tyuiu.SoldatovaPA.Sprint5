@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using tyuiu.cources.programming.interfaces.Sprint5;
 
 namespace Tyuiu.SoldatovaPA.Sprint5.Task3.V20.Lib
@@ -8,29 +9,29 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task3.V20.Lib
     {
         public string SaveToFileTextData(int x)
         {
-            // Вычисляем y(x) = x / √(x² + x)
-            double result = CalculateFunction(x);
+            // 1. Вычисляем y(x) = x / √(x² + x)
+            double y = CalculateFunction(x);
 
-            // Округляем до 3 знаков после запятой
-            string roundedResult = result.ToString("F3");
+            // 2. Округляем до 3 знаков
+            double roundedY = Math.Round(y, 3);
 
-            // Создаем путь к бинарному файлу
+            // 3. Преобразуем в Base64 строку (как ожидает тест)
+            byte[] bytes = BitConverter.GetBytes(roundedY);
+            string base64Result = Convert.ToBase64String(bytes);
+
+            // 4. Создаем путь к файлу
             string path = Path.Combine(Path.GetTempPath(), "OutPutFileTask3.bin");
 
-            // Записываем в бинарный файл
-            using (BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create)))
-            {
-                // Записываем как строку в бинарный формат
-                writer.Write(roundedResult);
-            }
+            // 5. Записываем Base64 строку в файл как текст
+            File.WriteAllText(path, base64Result, Encoding.UTF8);
 
-            return path;
+            // 6. Возвращаем Base64 строку
+            return base64Result;
         }
 
         private double CalculateFunction(int x)
         {
             // y(x) = x / √(x² + x)
-            // Проверка: чтобы под корнем не было отрицательного числа
             double underRoot = x * x + x;
 
             if (underRoot < 0)
