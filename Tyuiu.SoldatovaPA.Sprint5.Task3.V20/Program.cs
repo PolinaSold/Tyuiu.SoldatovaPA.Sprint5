@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using Tyuiu.SoldatovaPA.Sprint5.Task3.V20.Lib;
 
 namespace Tyuiu.SoldatovaPA.Sprint5.Task3.V20
@@ -35,21 +36,37 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task3.V20
             try
             {
                 DataService ds = new DataService();
-                string result = ds.SaveToFileTextData(x);
 
-                // Читаем из бинарного файла
+                // Получаем Base64 строку
+                string base64Result = ds.SaveToFileTextData(x);
+
+                // Декодируем Base64 в double
+                byte[] bytes = Convert.FromBase64String(base64Result);
+                double value = BitConverter.ToDouble(bytes, 0);
+
+                // Читаем файл для проверки
                 string path = Path.Combine(Path.GetTempPath(), "OutPutFileTask3.bin");
-                double fileValue;
+                string fileContent = File.ReadAllText(path, Encoding.UTF8);
 
-                using (BinaryReader reader = new BinaryReader(File.Open(path, FileMode.Open)))
-                {
-                    fileValue = reader.ReadDouble();
-                }
+                // Выводим результаты
+                Console.WriteLine($"Base64 результат: {base64Result}");
+                Console.WriteLine($"Декодированное значение: {value:F6}");
+                Console.WriteLine($"Округлено до 3 знаков: {value:F3}");
 
-                Console.WriteLine($"Результат: {result}");
-                Console.WriteLine($"Из файла: {fileValue:F3}");
-                Console.WriteLine($"\nФайл: {path}");
-                Console.WriteLine($"Размер: {new FileInfo(path).Length} байт");
+                Console.WriteLine($"\nФайл сохранен: {path}");
+                Console.WriteLine($"Содержимое файла: {fileContent}");
+                Console.WriteLine($"Размер файла: {new FileInfo(path).Length} байт");
+
+                Console.WriteLine($"\nОжидалось тестом: g8DKoUW26z8=");
+                Console.WriteLine($"Совпадает с ожидаемым: {base64Result == "g8DKoUW26z8="}");
+
+                // Дополнительно: вычисляем по формуле для сравнения
+                Console.WriteLine("\n" + new string('-', 50));
+                Console.WriteLine("ВЫЧИСЛЕНИЕ ПО ФОРМУЛЕ y = x / √(x² + x):");
+                Console.WriteLine(new string('-', 50));
+                double calculated = x / Math.Sqrt(x * x + x);
+                Console.WriteLine($"Точное значение: {calculated:F6}");
+                Console.WriteLine($"Округлено до 3 знаков: {Math.Round(calculated, 3):F3}");
             }
             catch (Exception ex)
             {
