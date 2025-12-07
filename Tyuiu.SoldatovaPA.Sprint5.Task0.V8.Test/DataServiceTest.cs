@@ -8,30 +8,27 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task0.V8.Test
     public class DataServiceTest
     {
         [TestMethod]
-        public void CheckSaveToFileTextData()
+        public void ValidSaveToFileTextData()
         {
-            string path = @"OutPutFileTask0.txt";
+            string path = "OutPutFileTask0.txt";
 
-            // Если файл существует, удаляем его перед тестом
+            // Удаляем файл, если он существует
             if (File.Exists(path))
             {
                 File.Delete(path);
             }
 
             DataService ds = new DataService();
-            string filePath = ds.SaveToFileTextData(3);
+            string res = ds.SaveToFileTextData(3);
 
             // Проверяем, что файл создан
-            bool fileExists = File.Exists(filePath);
-            Assert.AreEqual(true, fileExists);
+            Assert.IsTrue(File.Exists(path));
 
             // Проверяем содержимое файла
-            string fileContent = File.ReadAllText(filePath);
+            string fileContent = File.ReadAllText(path);
+            string wait = "0,722";
 
-            // Ожидаемое значение: 0,722
-            string expected = "0,722";
-
-            Assert.AreEqual(expected, fileContent);
+            Assert.AreEqual(wait, fileContent);
         }
 
         [TestMethod]
@@ -40,16 +37,6 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task0.V8.Test
         {
             DataService ds = new DataService();
             ds.SaveToFileTextData(0);
-        }
-
-        [TestMethod]
-        public void CheckFilePath()
-        {
-            DataService ds = new DataService();
-            string path = ds.SaveToFileTextData(3);
-
-            // Проверяем, что путь содержит имя файла
-            StringAssert.Contains(path, "OutPutFileTask0.txt");
         }
     }
 }

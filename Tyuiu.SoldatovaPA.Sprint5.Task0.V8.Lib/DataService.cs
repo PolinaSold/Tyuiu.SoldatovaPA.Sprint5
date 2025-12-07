@@ -8,27 +8,24 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task0.V8.Lib
     {
         public string SaveToFileTextData(int x)
         {
-            // Вычисление значения функции
-            double numerator = Math.Pow(x, 3) - 1;
-            double denominator = 4 * Math.Pow(x, 2);
-
-            if (Math.Abs(denominator) < 0.0000001)
+            // Проверка на ноль
+            if (x == 0)
             {
-                throw new DivideByZeroException("Ошибка: деление на ноль");
+                throw new DivideByZeroException("Ошибка: деление на ноль!");
             }
 
-            double result = numerator / denominator;
+            // Вычисление значения функции y = (x^3 - 1) / (4x^2)
+            double y = (Math.Pow(x, 3) - 1) / (4 * Math.Pow(x, 2));
 
             // Округление до 3 знаков после запятой
-            string roundedResult = result.ToString("F3");
+            string result = y.ToString("F3");
 
-            // Путь к файлу
-            string path = $@"{Directory.GetCurrentDirectory()}\OutPutFileTask0.txt";
+            // Путь к файлу в текущей директории
+            string path = "OutPutFileTask0.txt";
 
             // Запись результата в файл
-            File.WriteAllText(path, roundedResult);
+            File.WriteAllText(path, result);
 
-            // Возвращаем путь к файлу
             return path;
         }
     }

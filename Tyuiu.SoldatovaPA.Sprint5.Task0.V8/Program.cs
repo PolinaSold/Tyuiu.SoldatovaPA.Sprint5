@@ -27,7 +27,7 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task0.V8
             Console.WriteLine("***************************************************************************");
 
             int x = 3;
-            Console.WriteLine($"Значение X = {x}");
+            Console.WriteLine($"x = {x}");
 
             Console.WriteLine("***************************************************************************");
             Console.WriteLine("* РЕЗУЛЬТАТ:                                                              *");
@@ -37,19 +37,19 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task0.V8
             {
                 DataService ds = new DataService();
 
-                // Читаем результат из файла, который создал метод SaveToFileTextData
+                // Создание файла с результатом
                 string path = ds.SaveToFileTextData(x);
-                string fileContent = File.ReadAllText(path);
 
-                // Вычисляем значение для отображения
-                double numerator = Math.Pow(x, 3) - 1;
-                double denominator = 4 * Math.Pow(x, 2);
-                double resultValue = numerator / denominator;
+                // Чтение результата из файла
+                string result = File.ReadAllText(path);
 
-                Console.WriteLine($"Значение функции при x = {x}: {resultValue:F6}");
-                Console.WriteLine($"Округлённое значение (3 знака): {fileContent}");
-                Console.WriteLine($"Файл: {path}");
-                Console.WriteLine($"Содержимое файла: {fileContent}");
+                // Вывод результата на консоль
+                Console.WriteLine($"Значение функции = {result}");
+                Console.WriteLine($"Файл: {Path.GetFullPath(path)}");
+            }
+            catch (DivideByZeroException)
+            {
+                Console.WriteLine("Ошибка: деление на ноль!");
             }
             catch (Exception ex)
             {
