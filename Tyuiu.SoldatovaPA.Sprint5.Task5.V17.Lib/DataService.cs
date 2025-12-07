@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using tyuiu.cources.programming.interfaces.Sprint5;
 
 namespace Tyulu.SoldatovaPA.Sprint5.Task5.V17.Lib
@@ -12,27 +13,35 @@ namespace Tyulu.SoldatovaPA.Sprint5.Task5.V17.Lib
             if (!File.Exists(path))
                 throw new FileNotFoundException($"Файл не найден: {path}");
 
-            string allText = File.ReadAllText(path);
-            string[] lines = allText.Split(new char[] { ' ', '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            // Читаем весь текст
+            string content = File.ReadAllText(path);
+
+            // Заменяем запятые на точки для парсинга
+            content = content.Replace(',', '.');
+
+            // Разделяем на числа
+            string[] parts = content.Split(new char[] { ' ', '\n', '\r', '\t' },
+                                         StringSplitOptions.RemoveEmptyEntries);
 
             double sum = 0;
+            int count = 0;
 
-            foreach (string item in lines)
+            foreach (string part in parts)
             {
-                string trimmed = item.Trim();
-                if (string.IsNullOrEmpty(trimmed))
-                    continue;
-
-                // Заменяем запятые на точки для парсинга
-                string normalized = trimmed.Replace(',', '.');
-
-                if (double.TryParse(normalized, NumberStyles.Any, CultureInfo.InvariantCulture, out double number))
+                if (double.TryParse(part, NumberStyles.Any, CultureInfo.InvariantCulture, out double num))
                 {
-                    sum += number;
+                    sum += num;
+                    count++;
                 }
             }
 
-            return Math.Round(sum, 3);
+            double result = Math.Round(sum, 3);
+
+            // Для отладки
+            File.WriteAllText(Path.Combine(Path.GetTempPath(), "debug.txt"),
+                $"Sum: {sum}\nResult: {result}\nCount: {count}");
+
+            return result;
         }
     }
 }
