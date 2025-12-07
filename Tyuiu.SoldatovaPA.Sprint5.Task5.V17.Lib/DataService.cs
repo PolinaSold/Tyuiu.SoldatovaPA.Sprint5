@@ -12,57 +12,35 @@ namespace Tyulu.SoldatovaPA.Sprint5.Task5.V17.Lib
             if (!File.Exists(path))
                 throw new FileNotFoundException($"Файл не найден: {path}");
 
-            // Читаем все строки
-            string[] lines = File.ReadAllLines(path);
+            string content = File.ReadAllText(path);
+            content = content.Replace(',', '.');
+
+            string[] parts = content.Split(new char[] { ' ', '\n', '\r', '\t', ';' },
+                                         StringSplitOptions.RemoveEmptyEntries);
+
             double sum = 0;
 
-            foreach (string line in lines)
+            foreach (string part in parts)
             {
-                // Разбиваем строку на части
-                string[] parts = line.Split(new char[] { ' ', '\t', ',', ';' },
-                                           StringSplitOptions.RemoveEmptyEntries);
-
-                foreach (string part in parts)
+                if (double.TryParse(part, NumberStyles.Any, CultureInfo.InvariantCulture, out double number))
                 {
-                    string trimmed = part.Trim();
+                    // Округляем вещественное число до 3 знаков
+                    double roundedNumber = Math.Round(number, 3);
 
-                    // Пробуем парсить как целое число
-                    if (int.TryParse(trimmed, out int intValue))
+                    // Проверяем, является ли оно целым после округления
+                    if (Math.Abs(roundedNumber - Math.Round(roundedNumber)) < 0.000001)
                     {
+                        int intValue = (int)Math.Round(roundedNumber);
+
+                        // Проверяем, является ли простым
                         if (IsPrime(intValue))
                         {
-                            sum += intValue;
-                        }
-                    }
-                    // Пробуем парсить как вещественное число
-                    else if (double.TryParse(trimmed, NumberStyles.Any, CultureInfo.InvariantCulture, out double doubleValue))
-                    {
-                        // Проверяем, является ли число целым (с небольшой погрешностью)
-                        if (Math.Abs(doubleValue - Math.Round(doubleValue)) < 0.000001)
-                        {
-                            int intFromDouble = (int)Math.Round(doubleValue);
-                            if (IsPrime(intFromDouble))
-                            {
-                                sum += intFromDouble;
-                            }
-                        }
-                    }
-                    // Пробуем с заменой запятой/точки
-                    else if (double.TryParse(trimmed.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out doubleValue))
-                    {
-                        if (Math.Abs(doubleValue - Math.Round(doubleValue)) < 0.000001)
-                        {
-                            int intFromDouble = (int)Math.Round(doubleValue);
-                            if (IsPrime(intFromDouble))
-                            {
-                                sum += intFromDouble;
-                            }
+                            sum += roundedNumber;
                         }
                     }
                 }
             }
 
-            // Округляем результат до 3 знаков
             return Math.Round(sum, 3);
         }
 
