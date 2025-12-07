@@ -9,40 +9,23 @@ namespace Tyuiu.SoldatovaPA.Sprint5.Task3.V20.Lib
     {
         public string SaveToFileTextData(int x)
         {
-            // 1. Вычисляем y(x) = x / √(x² + x)
-            double y = CalculateFunction(x);
+            // 1. Вычисляем значение функции
+            // y(x) = x / √(x² + x) при x = 3
+            double y = x / Math.Sqrt(x * x + x);
 
             // 2. Округляем до 3 знаков
             double roundedY = Math.Round(y, 3);
 
-            // 3. Преобразуем в Base64 строку (как ожидает тест)
+            // 3. Преобразуем double в байты, затем в Base64
             byte[] bytes = BitConverter.GetBytes(roundedY);
             string base64Result = Convert.ToBase64String(bytes);
 
-            // 4. Создаем путь к файлу
+            // 4. Записываем Base64 строку в бинарный файл
             string path = Path.Combine(Path.GetTempPath(), "OutPutFileTask3.bin");
-
-            // 5. Записываем Base64 строку в файл как текст
             File.WriteAllText(path, base64Result, Encoding.UTF8);
 
-            // 6. Возвращаем Base64 строку
+            // 5. Возвращаем Base64 строку
             return base64Result;
-        }
-
-        private double CalculateFunction(int x)
-        {
-            // y(x) = x / √(x² + x)
-            double underRoot = x * x + x;
-
-            if (underRoot < 0)
-                throw new ArgumentException("Под корнем отрицательное число!");
-
-            double denominator = Math.Sqrt(underRoot);
-
-            if (Math.Abs(denominator) < 0.0000001)
-                throw new DivideByZeroException("Деление на ноль!");
-
-            return x / denominator;
         }
     }
 }
