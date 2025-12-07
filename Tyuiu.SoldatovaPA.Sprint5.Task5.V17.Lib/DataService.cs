@@ -3,7 +3,7 @@ using System.Globalization;
 using System.IO;
 using tyuiu.cources.programming.interfaces.Sprint5;
 
-namespace Tyutu.SoldatovaPA.Sprint5.Task5.V17.Lib
+namespace Tyuiu.SoldatovaPA.Sprint5.Task5.V17.Lib
 {
     public class DataService : ISprint5Task5V17
     {
@@ -11,31 +11,30 @@ namespace Tyutu.SoldatovaPA.Sprint5.Task5.V17.Lib
         {
             double sum = 0;
 
-            try
+            string data = File.ReadAllText(path);
+            string[] numbers = data.Split(new char[] { ',', ' ', '\n', '\r', '\t' },
+                                          StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (string numberStr in numbers)
             {
-                string data = File.ReadAllText(path);
-                string[] numbers = data.Split(new char[] { ',', ' ', '\n', '\r', '\t' },
-                                              StringSplitOptions.RemoveEmptyEntries);
-
-                foreach (string numberStr in numbers)
+                // Пытаемся преобразовать в double
+                if (double.TryParse(numberStr, NumberStyles.Any, CultureInfo.InvariantCulture, out double number))
                 {
-                    if (double.TryParse(numberStr, NumberStyles.Any, CultureInfo.InvariantCulture, out double number))
+                    // Проверяем, является ли число целым
+                    if (Math.Abs(number - Math.Round(number)) < 0.000001)
                     {
-                        int intNumber = (int)Math.Round(number, MidpointRounding.AwayFromZero);
+                        int intNumber = (int)Math.Round(number);
 
-                        if (IsPrime(intNumber))
+                        // Проверяем на простоту (только положительные целые числа > 1)
+                        if (intNumber > 1 && IsPrime(intNumber))
                         {
-                            sum += number;
+                            sum += intNumber;
                         }
                     }
                 }
+            }
 
-                return Math.Round(sum, 3);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Ошибка при обработке файла: {ex.Message}");
-            }
+            return Math.Round(sum, 3);
         }
 
         private bool IsPrime(int n)

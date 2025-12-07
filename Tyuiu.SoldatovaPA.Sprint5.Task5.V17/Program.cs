@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO;
+using Tyuiu.SoldatovaPA.Sprint5.Task5.V17.Lib;
 
-namespace Tyutu.SoldatovaPA.Sprint5.Task5.V17
+namespace Tyuiu.SoldatovaPA.Sprint5.Task5.V17
 {
     class Program
     {
@@ -24,48 +25,27 @@ namespace Tyutu.SoldatovaPA.Sprint5.Task5.V17
             Console.WriteLine("* ИСХОДНЫЕ ДАННЫЕ:                                                        *");
             Console.WriteLine("***************************************************************************");
 
-            string path = @"C:\DataSprint5\InPutDataFileTask5V17.txt";
+            DataService ds = new DataService();
 
-            Console.WriteLine($"Данные находятся в файле: {path}");
+            // Путь к файлу
+            string path = $@"{Directory.GetCurrentDirectory()}\InPutDataFileTask5V17.txt";
+
+            Console.WriteLine("Данные находятся в файле: " + path);
             Console.WriteLine("***************************************************************************");
-
-            if (!File.Exists(path))
-            {
-                Console.WriteLine("* ОШИБКА:                                                                 *");
-                Console.WriteLine($"* Файл {path} не найден!                                                 *");
-                Console.WriteLine("* Создайте папку C:\\DataSprint5\\ и поместите в неё файл с данными.       *");
-                Console.WriteLine("***************************************************************************");
-                Console.WriteLine("Содержимое файла должно быть:");
-                Console.WriteLine("24, 2, 18, 4, -9, 4, 10, 18, 19, 16, 11, -3, -3, 15, 3, 18, -5, -4, 25, 19");
-                Console.WriteLine("***************************************************************************");
-                Console.WriteLine("Нажмите любую клавишу для выхода...");
-                Console.ReadKey();
-                return;
-            }
+            Console.WriteLine("* РЕЗУЛЬТАТ:                                                              *");
+            Console.WriteLine("***************************************************************************");
 
             try
             {
-                // Создаем объект DataService напрямую, без ссылки на интерфейс
-                var ds = new Tyutu.SoldatovaPA.Sprint5.Task5.V17.Lib.DataService();
-                double sum = ds.LoadFromDataFile(path);
-
-                Console.WriteLine("* РЕЗУЛЬТАТ:                                                              *");
-                Console.WriteLine("***************************************************************************");
-
-                Console.WriteLine($"Сумма всех простых целых чисел в файле: {sum:F3}");
-
-                Console.WriteLine("\n***************************************************************************");
-                Console.WriteLine("Нажмите любую клавишу для выхода...");
-                Console.ReadKey();
+                double res = ds.LoadFromDataFile(path);
+                Console.WriteLine("Сумма всех простых целых чисел в файле = " + res.ToString("F3"));
             }
             catch (Exception ex)
             {
-                Console.WriteLine("* ОШИБКА:                                                                 *");
-                Console.WriteLine($"* {ex.Message}                                                         *");
-                Console.WriteLine("***************************************************************************");
-                Console.WriteLine("Нажмите любую клавишу для выхода...");
-                Console.ReadKey();
+                Console.WriteLine("Ошибка! " + ex.Message);
             }
+
+            Console.ReadKey();
         }
     }
 }
