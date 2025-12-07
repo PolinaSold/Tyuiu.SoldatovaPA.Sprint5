@@ -7,19 +7,15 @@ namespace Tyulu.SoldatovaPA.Sprint5.Task4.V17
     {
         static void Main()
         {
-            string tempFile = Path.GetTempFileName();
-            File.WriteAllText(tempFile, "2.5");
-
+            string path = "C:\\DataSprint5\\InPutDataFileTask4V0.txt";
             var service = new Tyulu.SoldatovaPA.Sprint5.Task4.V17.Lib.DataService();
-            double result = service.LoadFromDataFile(tempFile);
-            double rounded = Math.Round(result, 3);
+            double result = service.LoadFromDataFile(path);
 
+            Console.WriteLine(result);
+
+            // Сохраняем результат в файл (если нужно)
             string outFile = Path.Combine(Path.GetTempPath(), "output_task4_v17.txt");
-            File.WriteAllText(outFile, rounded.ToString("F3"));
-
-            Console.WriteLine($"Результат: {rounded:F3}");
-            Console.WriteLine($"Сохранен в: {outFile}");
-            Console.WriteLine(File.ReadAllText(outFile));
+            File.WriteAllText(outFile, result.ToString("F3"));
         }
     }
 }

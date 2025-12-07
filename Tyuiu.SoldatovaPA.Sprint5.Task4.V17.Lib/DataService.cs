@@ -20,7 +20,8 @@ namespace Tyulu.SoldatovaPA.Sprint5.Task4.V17.Lib
             if (Math.Abs(x) < 0.0000001)
                 throw new DivideByZeroException("x не может быть 0");
 
-            return Math.Sin(2.0 / (3.0 * x)) + x * x;
+            double result = Math.Sin(2.0 / (3.0 * x)) + x * x;
+            return Math.Round(result, 3); // ОКРУГЛЕНИЕ ЗДЕСЬ!
         }
     }
 }
