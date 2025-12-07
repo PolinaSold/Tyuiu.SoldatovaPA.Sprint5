@@ -1,6 +1,6 @@
 ﻿using System;
-using System.IO;
 using System.Globalization;
+using System.IO;
 using tyuiu.cources.programming.interfaces.Sprint5;
 
 namespace Tyulu.SoldatovaPA.Sprint5.Task5.V17.Lib
@@ -21,45 +21,22 @@ namespace Tyulu.SoldatovaPA.Sprint5.Task5.V17.Lib
                 if (string.IsNullOrEmpty(trimmedLine))
                     continue;
 
-                // Парсим число
+                // Пробуем разные форматы чисел
                 if (double.TryParse(trimmedLine, NumberStyles.Any, CultureInfo.InvariantCulture, out double number))
                 {
-                    // Проверяем, является ли число целым
-                    if (IsInteger(number))
-                    {
-                        int intValue = (int)Math.Round(number);
-                        // Проверяем, является ли число простым
-                        if (IsPrime(intValue))
-                        {
-                            sum += intValue;
-                        }
-                    }
+                    sum += number;
+                }
+                else if (double.TryParse(trimmedLine, NumberStyles.Any, new CultureInfo("ru-RU"), out number))
+                {
+                    sum += number;
+                }
+                else if (double.TryParse(trimmedLine, NumberStyles.Any, new CultureInfo("en-US"), out number))
+                {
+                    sum += number;
                 }
             }
 
-            return Math.Round(sum, 3);
-        }
-
-        private bool IsInteger(double number)
-        {
-            return Math.Abs(number % 1) <= 0.0000001;
-        }
-
-        private bool IsPrime(int number)
-        {
-            if (number <= 1) return false;
-            if (number == 2) return true;
-            if (number % 2 == 0) return false;
-
-            int boundary = (int)Math.Floor(Math.Sqrt(number));
-
-            for (int i = 3; i <= boundary; i += 2)
-            {
-                if (number % i == 0)
-                    return false;
-            }
-
-            return true;
+            return Math.Round(sum, 3, MidpointRounding.AwayFromZero);
         }
     }
 }
